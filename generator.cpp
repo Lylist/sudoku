@@ -1,74 +1,75 @@
-#include<iostream>
-#include<stdlib.h>
-#include<time.h> 
+/*å­¦å·1120161945*/
+#include <iostream>
+#include <cstdlib>
+#include <ctime> 
+#include <cstring>
+#include <cstdio>
 using namespace std;
-int map[9][9];	//Êı¶ÀµØÍ¼
-int I[9][9];	//¼ÇÂ¼µÚiĞĞ³öÏÖµÄ1-9
-int J[9][9];	//¼ÇÂ¼µÚjÁĞ³öÏÖµÄ1-9
-int B[9][9];	/*µÚi¸ö¾Å¹¬³öÏÖµÄ1-9	0 1 2
-				3 4 5
-				6 7 8*/
-int n;			//¼ÇÂ¼µü´ú´ÎÊı
-bool newsudu(int x);		//x ¿ªÊ¼µÄÎ»ÖÃ£¬¾àÀë0µÄÎ»ÖÃ
-void clearrandom(int* r);
-int newrandom(int* r);
-void coutsudu(void);
+int map[9][9];	//æ•°ç‹¬åœ°å›¾
+int Row[9][9];	//è®°å½•ç¬¬iè¡Œå‡ºç°çš„1-9
+int Col[9][9];	//è®°å½•ç¬¬jåˆ—å‡ºç°çš„1-9
+int Palace[9][9];	/*ç¬¬iä¸ªä¹å®«å‡ºç°çš„1-9*/
+int n;			//è®°å½•è¿­ä»£æ¬¡æ•°
+bool newsudu(int x);		//x å¼€å§‹çš„ä½ç½®ï¼Œè·ç¦»0çš„ä½ç½®
+void clearrandom(int* r);   //åˆå§‹åŒ–
+int newrandom(int* r);    //éšæœºç”Ÿæˆæ£‹ç›˜
+void coutsudu(void);      //æ£‹ç›˜è¾“å‡º
 int main()
 {
-	srand((unsigned)time(0));
-	for (int i = 0; i<9; i++)
-	{
-		for (int j = 0; j<9; j++)
-		{
-			map[i][j] = 0;
-			I[i][j] = 0;
-			J[i][j] = 0;
-			B[i][j] = 0;
-		}
-	}
-	n = 0;
+	freopen("sudoku.txt", "w", stdout);
+	srand((int)time(0));
 
-	newsudu(0);
-	coutsudu();
-	//cout << n << endl;
-	getchar();
+	int t = 20;
+	while (t--)
+	{
+		memset(Col,0,sizeof(Col));          //æ£‹ç›˜åˆå§‹åŒ– 
+		memset(Row,0,sizeof(Row));
+		memset(Palace,0,sizeof(Palace));
+		memset(map,0,sizeof(map));
+		n = 1;
+
+		map[0][0] = 1;
+		Row[0][0] = 1;
+		Col[0][0] = 1;
+		newsudu(1);
+		coutsudu();
+	}
+	
 	return 0;
 }
-bool newsudu(int x)	//x ¿ªÊ¼µÄÎ»ÖÃ£¬¾àÀë0µÄÎ»ÖÃ
+bool newsudu(int x)	//x å¼€å§‹çš„ä½ç½®ï¼Œè·ç¦»0çš„ä½ç½®
 {
 	if (x == 81)
 	{
 		return true;
 	}
-	int r[9];		//ÓÃÀ´Ëæ¼´Éú³É1-9£¬ÇÒ²»ÄÜÖØ¸´
+	int r[9];		//ç”¨æ¥éšå³ç”Ÿæˆ1-9ï¼Œä¸”ä¸èƒ½é‡å¤
 	clearrandom(r);
-	//¿ªÊ¼Íùmap[i][j]²åÊı¾İ
-	do
+	//å¼€å§‹å¾€map[i][j]æ’æ•°æ®
+	while(1)
 	{
 		int num = newrandom(r);
-		if (num == 0)	//²»ĞĞÁË
+		if (num == 0)	//ä¸è¡Œäº†
 		{
-			//cout<<x<<endl;
 			return false;
 		}
-		if (I[x / 9][num - 1] == 0 && J[x % 9][num - 1] == 0 && B[((x / 9) / 3) * 3 + (x % 9 / 3)][num - 1] == 0)
+		if (Row[x / 9][num - 1] == 0 && Col[x % 9][num - 1] == 0 && Palace[((x / 9) / 3) * 3 + (x % 9 / 3)][num - 1] == 0)
 		{
-			I[x / 9][num - 1] = 1;
-			J[x % 9][num - 1] = 1;
-			B[((x / 9) / 3) * 3 + (x % 9 / 3)][num - 1] = 1;
+			Row[x / 9][num - 1] = 1;
+			Col[x % 9][num - 1] = 1;
+			Palace[((x / 9) / 3) * 3 + (x % 9 / 3)][num - 1] = 1;
 			map[x / 9][x % 9] = num;
 			n++;
-			//coutsudu();
 			if (newsudu(x + 1) == true)
 			{
 				return true;
 			}
 			map[x / 9][x % 9] = 0;
-			I[x / 9][num - 1] = 0;
-			J[x % 9][num - 1] = 0;
-			B[((x / 9) / 3) * 3 + (x % 9 / 3)][num - 1] = 0;
+			Row[x / 9][num - 1] = 0;
+			Col[x % 9][num - 1] = 0;
+			Palace[((x / 9) / 3) * 3 + (x % 9 / 3)][num - 1] = 0;
 		}
-	} while (1);
+	}
 }
 void coutsudu(void)
 {
@@ -80,37 +81,31 @@ void coutsudu(void)
 		}
 		cout << endl;
 	}
-	cout << "---------------------------------" << endl;
+	cout << endl;
 }
 void clearrandom(int* r)
 {
-	for (int i = 0; i<9; i++)
-	{
-		r[i] = 0;
-	}
+	memset(r, 0, 9 * sizeof(int));
 }
 int newrandom(int* r)	//1-9
 {
 	int num;
-	do
+	num = rand() % 9;
+	if (r[num] == 0)
 	{
-		num = rand() % 9;
-		if (r[num] == 0)
+		r[num] = 1;
+		return num + 1;
+	}
+	else
+	{
+		for (int i = 0; i < 9; i++)
 		{
-			r[num] = 1;
-			return num + 1;
-		}
-		else
-		{
-			for (int i = 0; i<9; i++)
+			if (r[i] == 0)
 			{
-				if (r[i] == 0)
-				{
-					r[i] = 1;
-					return i + 1;
-				}
+				r[i] = 1;
+				return i + 1;
 			}
-			return 0;
 		}
-	} while (1);
+	}
+	return 0;
 }
