@@ -1,16 +1,7 @@
-#pragma once
 #include <iostream>
-#include <cstdio>
-#include <cstdlib>
 #include <cstring>
-#include <time.h>
 using namespace std;
 
-int read(char str[])
-{
-	int Number = 0;
-	int len = strlen(str);
-	for (int i = 0; i < len; i++) Number = Number * 10 + str[i] - '0';
-	return Number;
-}
-
+extern int Generator_Sudoku(int t);   //生成终局
+extern int read(char str[]);	//字符串转数字
+extern int Solve_Sudoku(char File[]);		//解数独
