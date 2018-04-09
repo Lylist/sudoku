@@ -130,10 +130,11 @@ void Print_Map(int Sudoku_Map[][9])
 	{
 		for (int j = 0; j<9; j++)
 		{
-			printf("%d%c", Sudoku_Map[i][j], j == 8 ? '\n' : ' ');
+			putchar(Map[i][j] + '0');
+			if (j != 8) putchar(' ');
 		}
 	}
-	printf("\n");
+	putchar('\n');
 }
 void Transform(int Col1, int Col2, int Raw1, int Raw2, int Number1, int Number2)
 {
