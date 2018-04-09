@@ -3,36 +3,76 @@
 #include <cstdlib>
 #include <cstring>
 #include <time.h>
+#include "sudoku.h"
 using namespace std;
-const int maxr = 729, maxc = 324;//±íÃ÷¸Ã¾ØÕóÎª729*324.
-int r[maxc + maxr * 5 + 10], l[maxc + maxr * 5 + 10];
-int u[maxc + maxr * 5 + 10], d[maxc + maxr * 5 + 10], head[10][10][10];
-int row[maxc + maxr * 5 + 10], map[10][10], ans[100], c[maxc + maxr * 5 + 10], s[maxc + 10], top = 0;
+const int MAXR = 729, MAXC = 324;//è¡¨æ˜è¯¥çŸ©é˜µä¸º729*324.
+int r[MAXC + MAXR * 5 + 10], l[MAXC + MAXR * 5 + 10];
+int u[MAXC + MAXR * 5 + 10], d[MAXC + MAXR * 5 + 10], head[10][10][10];
+int row[MAXC + MAXR * 5 + 10], Map[10][10], ans[100], c[MAXC + MAXR * 5 + 10], s[MAXC + 10], top = 0;
 
-void node(int c1, int cnt)//ÕÒµ½¶ÔÓ¦¹ØÏµ
+void Init(void);	//åˆå§‹åŒ–
+void Correspondence(int Col1, int cnt);	//æ‰¾åˆ°å¯¹åº”å…³ç³»
+void Remove(int Col1);	//å°†Col1åˆ—å»æ‰ã€‚å¹¶ä¸”å°†ç›¸åº”è¡Œä¹Ÿå»æ‰ã€‚
+void Resume(int Col1);	//å°†Col1åˆ—æ¢å¤ï¼Œå¹¶å°†ç›¸åº”è¡Œæ¢å¤ã€‚è®°å¾—é¡ºåºï¼ï¼ï¼
+bool dfs(int now);	
+void print(void);    //è¾“å‡ºä¸€ä¸ªæ»¡è¶³çš„è§£
+
+
+int Solve_Sudoku(char File[])
 {
-	u[d[c1]] = cnt;
-	d[cnt] = d[c1];
-	u[cnt] = c1;
-	d[c1] = cnt;
-	s[c1]++;
-	c[cnt] = c1;
+	freopen(File, "r", stdin);
+	freopen("sudoku.txt", "w", stdout);
+	/*è®¡æ—¶å™¨
+	clock_t startTime, endTime;
+	startTime = clock();*/
+	int t;
+	while (scanf("%d", &Map[1][1]) != EOF)
+	{
+		for (int i = 1; i <= 9; i++)
+		{
+			for (int j = 1; j <= 9; j++)
+			{
+				if (i == 1 && j == 1) continue;
+				scanf("%d", &Map[i][j]);
+			}
+		}
+		Init();//åˆå§‹åŒ–ï¼›
+		for (int i = 1; i <= 9; i++)
+			for (int j = 1; j <= 9; j++)
+				if (Map[i][j])   //å°†å·²ç»å­˜åœ¨çš„å…ƒç´ åœ¨çŸ©é˜µä¸­å»æ‰ï¼Œå°±æ˜¯åˆ é™¤å¹¶è®°å½•ç›¸åº”çš„è¡Œä¸åˆ—
+				{
+					top++;
+					ans[top] = row[head[i][j][Map[i][j]]];
+					Remove(c[head[i][j][Map[i][j]]]);
+					for (int u = r[head[i][j][Map[i][j]]]; u != head[i][j][Map[i][j]]; u = r[u])
+						Remove(c[u]);
+				}
+		bool ok;
+		ok=dfs(top + 1);	//åªéœ€è¦æœç´¢å‰©ä¸‹çš„å³å¯
+		if (ok == true) print();
+		else printf("No solution\n");
+	}
+	/*è®¡æ—¶å™¨
+	endTime = clock();
+	cout << "Totle Time : " << (double)(endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;*/
+	return 0;
 }
-void init()   //³õÊ¼»¯
+
+void Init()   //åˆå§‹åŒ–
 {
 	memset(s, 0, sizeof(s));
 	memset(head, 0, sizeof(head));
 	top = 0;
-	for (int i = 0; i <= maxc + maxr * 5; i++)
+	for (int i = 0; i <= MAXC + MAXR * 5; i++)
 	{
 		r[i] = 0; l[i] = 0; u[i] = 0; d[i] = 0; c[i] = 0; row[i] = 0;
 	}
-	for (int i = 0; i <= maxc; i++)
+	for (int i = 0; i <= MAXC; i++)
 	{
 		s[i] = 0; l[i] = i - 1; r[i] = i + 1; u[i] = d[i] = i; c[i] = 0;
 	}
-	l[0] = maxc; r[maxc] = 0;
-	int cnt = maxc;
+	l[0] = MAXC; r[MAXC] = 0;
+	int cnt = MAXC;
 	for (int i = 1; i <= 9; i++)
 		for (int j = 1; j <= 9; j++)
 			for (int k = 1; k <= 9; k++)
@@ -45,18 +85,29 @@ void init()   //³õÊ¼»¯
 				}
 				l[cnt + 1] = cnt + 4; r[cnt + 4] = cnt + 1;
 				head[i][j][k] = cnt + 1;
-				node((i - 1) * 9 + j, cnt + 1);
-				node(81 + (k - 1) * 27 + i, cnt + 2);
-				node(81 + (k - 1) * 27 + 9 + j, cnt + 3);
-				node(81 + (k - 1) * 27 + 18 + (j - 1) / 3 + 1 + ((i - 1) / 3) * 3, cnt + 4);
+				Correspondence((i - 1) * 9 + j, cnt + 1);
+				Correspondence(81 + (k - 1) * 27 + i, cnt + 2);
+				Correspondence(81 + (k - 1) * 27 + 9 + j, cnt + 3);
+				Correspondence(81 + (k - 1) * 27 + 18 + (j - 1) / 3 + 1 + ((i - 1) / 3) * 3, cnt + 4);
 				cnt += 4;
-			}    //½¨Á¢Ô­Ê¼¾ØÕó£¨Ö»ÊÇÒ»ÖÖ¶ÔÓ¦¹ØÏµ£©
+			}    //å»ºç«‹åŸå§‹çŸ©é˜µï¼ˆåªæ˜¯ä¸€ç§å¯¹åº”å…³ç³»ï¼‰
 	for (int i = 0; i < 100; i++) ans[i] = 0;
 }
-void remove(int c1)//½«c1ÁĞÈ¥µô¡£²¢ÇÒ½«ÏàÓ¦ĞĞÒ²È¥µô¡£
+
+void Correspondence(int Col1, int cnt)//æ‰¾åˆ°å¯¹åº”å…³ç³»
 {
-	l[r[c1]] = l[c1]; r[l[c1]] = r[c1];
-	for (int i = d[c1]; i != c1; i = d[i])
+	u[d[Col1]] = cnt;
+	d[cnt] = d[Col1];
+	u[cnt] = Col1;
+	d[Col1] = cnt;
+	s[Col1]++;
+	c[cnt] = Col1;
+}
+
+void Remove(int Col1)//å°†Col1åˆ—å»æ‰ã€‚å¹¶ä¸”å°†ç›¸åº”è¡Œä¹Ÿå»æ‰ã€‚
+{
+	l[r[Col1]] = l[Col1]; r[l[Col1]] = r[Col1];
+	for (int i = d[Col1]; i != Col1; i = d[i])
 		for (int j = r[i]; j != i; j = r[j])
 		{
 			u[d[j]] = u[j];
@@ -65,46 +116,45 @@ void remove(int c1)//½«c1ÁĞÈ¥µô¡£²¢ÇÒ½«ÏàÓ¦ĞĞÒ²È¥µô¡£
 		}
 }
 
-void resume(int c1)//½«c1ÁĞ»Ö¸´£¬²¢½«ÏàÓ¦ĞĞ»Ö¸´¡£¼ÇµÃË³Ğò£¡£¡£¡£¡Ö®Ç°ÊÇd-r£¬ÏÖÔÚÊÇu-l¡£
+void Resume(int Col1)//å°†Col1åˆ—æ¢å¤ï¼Œå¹¶å°†ç›¸åº”è¡Œæ¢å¤ã€‚è®°å¾—é¡ºåºï¼ï¼ï¼ï¼ä¹‹å‰æ˜¯d-rï¼Œç°åœ¨æ˜¯u-lã€‚
 {
-	for (int i = u[c1]; i != c1; i = u[i])
+	for (int i = u[Col1]; i != Col1; i = u[i])
 		for (int j = l[i]; j != i; j = l[j])
 		{
 			u[d[j]] = j;
 			d[u[j]] = j;
 			s[c[j]]++;
 		}
-	l[r[c1]] = c1;
-	r[l[c1]] = c1;
+	l[r[Col1]] = Col1;
+	r[l[Col1]] = Col1;
 }
-bool dfs(int k)
+bool dfs(int now)
 {
-	//printf("%d\n", k);
 	//if (k>81) return true;
 	if (r[0] == 0) return true;
-	int c1, minnum = 10000000;
+	int Col1, minnum = 10000000;
 	for (int i = r[0]; i != 0; i = r[i])
 	{
 		if (!s[i]) return false;
 		if (s[i]<minnum)
 		{
-			minnum = s[i]; c1 = i;
+			minnum = s[i]; Col1 = i;
 		}
 	}
-	remove(c1);
-	for (int i = d[c1]; i != c1; i = d[i])
+	Remove(Col1);
+	for (int i = d[Col1]; i != Col1; i = d[i])
 	{
-		ans[k] = row[i];
+		ans[now] = row[i];
 		for (int j = r[i]; j != i; j = r[j])
-			remove(c[j]);
-		if (dfs(k + 1)) return true;
+			Remove(c[j]);
+		if (dfs(now + 1)) return true;
 		for (int j = l[i]; j != i; j = l[j])
-			resume(c[j]);
+			Resume(c[j]);
 	}
-	resume(c1);
+	Resume(Col1);
 	return false;
 }
-void print()    //Êä³öÒ»¸öÂú×ãµÄ½â
+void print()    //è¾“å‡ºä¸€ä¸ªæ»¡è¶³çš„è§£
 {
 	int x, y, num;
 	for (int i = 1; i <= 81; i++)
@@ -112,53 +162,14 @@ void print()    //Êä³öÒ»¸öÂú×ãµÄ½â
 		num = (ans[i] - 1) / 81 + 1;
 		x = (ans[i] - (num - 1) * 81 - 1) / 9 + 1;
 		y = ans[i] - (num - 1) * 81 - (x - 1) * 9;
-		map[x][y] = num;
+		Map[x][y] = num;
 	}
 	for (int i = 1; i <= 9; i++)
 	{
 		for (int j = 1; j <= 9; j++)
 		{
-			printf("%d%c", map[i][j], j == 9 ? '\n' : ' ');
+			printf("%d%c", Map[i][j], j == 9 ? '\n' : ' ');
 		}
 	}
 	printf("\n");
-}
-int main()
-{
-	freopen("test1.txt", "r", stdin);
-	freopen("test.out", "w", stdout);
-	/*¼ÆÊ±Æ÷*/
-	clock_t startTime, endTime;
-	startTime = clock();
-	int t;
-	while (scanf("%d", &map[1][1]) != EOF)
-	{
-		for (int i = 1; i <= 9; i++)
-		{
-			for (int j = 1; j <= 9; j++)
-			{
-				if (i == 1 && j == 1) continue;
-				scanf("%d", &map[i][j]);
-			}
-		}
-		init();//³õÊ¼»¯£»
-		for (int i = 1; i <= 9; i++)
-			for (int j = 1; j <= 9; j++)
-				if (map[i][j])   //½«ÒÑ¾­´æÔÚµÄÔªËØÔÚ¾ØÕóÖĞÈ¥µô£¬¾ÍÊÇÉ¾³ı²¢¼ÇÂ¼ÏàÓ¦µÄĞĞÓëÁĞ
-				{
-					top++;
-					ans[top] = row[head[i][j][map[i][j]]];
-					remove(c[head[i][j][map[i][j]]]);
-					for (int u = r[head[i][j][map[i][j]]]; u != head[i][j][map[i][j]]; u = r[u])
-						remove(c[u]);
-				}
-		bool anss;
-		anss=dfs(top + 1);//ÎÒÃÇÒ»¹²ÒªÌîÈë81¸öÊı£¬µ«ÒòÎªÒÑ¾­¸øÁËtop¸öÊı£¬ËùÒÔÖ»ĞèÒªËÑË÷Ê£ÏÂµÄ¼´¿É
-		if (anss == true) print();
-		else printf("No solution\n");
-	}
-	/*¼ÆÊ±Æ÷*/
-	endTime = clock();
-	cout << "Totle Time : " << (double)(endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;
-	return 0;
 }
