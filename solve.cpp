@@ -170,6 +170,7 @@ void print()    //输出一个满足的解
 			putchar(Map[i][j] + '0');
 			if (j != 9) putchar(' ');
 		}
+		putchar('\n');
 	}
 	putchar('\n');
 }
