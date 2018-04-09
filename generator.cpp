@@ -4,18 +4,18 @@
 #include <time.h>
 #include "sudoku.h"
 using namespace std;
-int Map[9][9];	//æ•°ç‹¬åœ°å›¾
-int TransMap[9][9];  //ç”¨äºå˜æ¢çš„æ•°ç‹¬
-int Raw[9][9];	//è®°å½•ç¬¬iè¡Œå‡ºç°çš„1-9
-int Col[9][9];	//è®°å½•ç¬¬jåˆ—å‡ºç°çš„1-9
-int Palace[9][9];	/*ç¬¬iä¸ªä¹å®«å‡ºç°çš„1-9*/
-int n;			//è®°å½•è¿­ä»£æ¬¡æ•°
+int Map[9][9];	//Êı¶ÀµØÍ¼
+int TransMap[9][9];  //ÓÃÓÚ±ä»»µÄÊı¶À
+int Raw[9][9];	//¼ÇÂ¼µÚiĞĞ³öÏÖµÄ1-9
+int Col[9][9];	//¼ÇÂ¼µÚjÁĞ³öÏÖµÄ1-9
+int Palace[9][9];	/*µÚi¸ö¾Å¹¬³öÏÖµÄ1-9*/
+int n;			//¼ÇÂ¼µü´ú´ÎÊı
 
-bool New_Sudoku(int x);		//x å¼€å§‹çš„ä½ç½®ï¼Œè·ç¦»0çš„ä½ç½®
-void Clear_Random(int* r);   //æ¸…ç©ºéšæœºæ•°ç»„
-int Generator_Random(int* r);     //éšæœºç”Ÿæˆ
-void Print_Map(int Sudoku_Map[][9]); //è¾“å‡ºç»ˆå±€
-void Transform(int Col1, int Col2, int Raw1, int Raw2, int Number1, int Number2);   //é€šè¿‡å˜æ¢ç”Ÿæˆæ–°çš„ç»ˆå±€
+bool New_Sudoku(int x);		//x ¿ªÊ¼µÄÎ»ÖÃ£¬¾àÀë0µÄÎ»ÖÃ
+void Clear_Random(int* r);   //Çå¿ÕËæ»úÊı×é
+int Generator_Random(int* r);     //Ëæ»úÉú³É
+void Print_Map(int Sudoku_Map[][9]); //Êä³öÖÕ¾Ö
+void Transform(int Col1, int Col2, int Raw1, int Raw2, int Number1, int Number2);   //Í¨¹ı±ä»»Éú³ÉĞÂµÄÖÕ¾Ö
 
 int read(char str[])
 {
@@ -32,14 +32,15 @@ int read(char str[])
 int Generator_Sudoku(int t)
 {
 	freopen("sudoku.txt", "w", stdout);
-	/*è®¡æ—¶å™¨
+	/*¼ÆÊ±Æ÷
 	clock_t startTime, endTime;
 	startTime = clock();*/
-	srand((int)time(0));
+	srand((unsigned int)(time(0)));
+	//srand((int)(time(0));
 	int num = 0;
 	while (t)
 	{
-		if (num %1373 == 0)               //ä¸€ä¸ªç§å­ç»ˆå±€å¯ä»¥äº§ç”Ÿ1373ä¸ªå˜æ¢ç»ˆå±€
+		if (num %1373 == 0)               //Ò»¸öÖÖ×ÓÖÕ¾Ö¿ÉÒÔ²úÉú1373¸ö±ä»»ÖÕ¾Ö
 		{
 			for (int i = 0; i < 9; i++)
 			{
@@ -62,7 +63,7 @@ int Generator_Sudoku(int t)
 			t--;
 			continue;
 		}
-		for (int Col1 = 1; Col1 < 9; Col1++)   //å…ˆå˜æ¢åˆ—ï¼Œåœ¨å˜æ¢è¡Œï¼Œå†äº¤æ¢æ•°å­—
+		for (int Col1 = 1; Col1 < 9; Col1++)   //ÏÈ±ä»»ÁĞ£¬ÔÚ±ä»»ĞĞ£¬ÔÙ½»»»Êı×Ö
 		{
 			if (t == 0) break;
 			int UP_Col = Col1 / 3 * 3 + 2;
@@ -92,21 +93,21 @@ int Generator_Sudoku(int t)
 			}
 		}
 	}
-	/*è®¡æ—¶å™¨
+	/*¼ÆÊ±Æ÷
 	endTime = clock();
 	cout << "Totle Time : " << (double)(endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;*/
 	return 0;
 }
-bool New_Sudoku(int x)	//xä¸ºå½“å‰çš„ä½ç½®
+bool New_Sudoku(int x)	//xÎªµ±Ç°µÄÎ»ÖÃ
 {
 	if (x == 81) return true;
-	int RandomRaw[9];		//ç”¨æ¥éšå³ç”Ÿæˆ1-9
+	int RandomRaw[9];		//ÓÃÀ´Ëæ¼´Éú³É1-9
 	Clear_Random(RandomRaw);
-	//å¼€å§‹å¾€Map[i][j]æ’æ•°æ®
+	//¿ªÊ¼ÍùMap[i][j]²åÊı¾İ
 	do
 	{
 		int num = Generator_Random(RandomRaw);
-		//å‡ºç°çŸ›ç›¾
+		//³öÏÖÃ¬¶Ü
 		if (num == 0) return false;
 		if (Raw[x / 9][num - 1] == 0 && Col[x % 9][num - 1] == 0 && Palace[((x / 9) / 3) * 3 + (x % 9 / 3)][num - 1] == 0)
 		{
@@ -116,7 +117,7 @@ bool New_Sudoku(int x)	//xä¸ºå½“å‰çš„ä½ç½®
 			Map[x / 9][x % 9] = num;
 			n++;
 			if (New_Sudoku(x + 1) == 1) return 1;
-			//å›æº¯
+			//»ØËİ
 			Map[x / 9][x % 9] = 0;
 			Raw[x / 9][num - 1] = 0;
 			Col[x % 9][num - 1] = 0;
@@ -130,15 +131,16 @@ void Print_Map(int Sudoku_Map[][9])
 	{
 		for (int j = 0; j<9; j++)
 		{
-			putchar(Map[i][j] + '0');
+			putchar(Sudoku_Map[i][j] + '0');
 			if (j != 8) putchar(' ');
 		}
+		putchar('\n');
 	}
 	putchar('\n');
 }
 void Transform(int Col1, int Col2, int Raw1, int Raw2, int Number1, int Number2)
 {
-	for (int i = 0; i < 9; i++)    //äº¤æ¢æ•°å­—
+	for (int i = 0; i < 9; i++)    //½»»»Êı×Ö
 	{
 		for (int j = 0; j < 9; j++)
 		{
@@ -147,9 +149,9 @@ void Transform(int Col1, int Col2, int Raw1, int Raw2, int Number1, int Number2)
 			else TransMap[i][j] = Map[i][j];
 		}
 	}
-	//äº¤æ¢åˆ—
+	//½»»»ÁĞ
 	for (int i = 0; i < 9; i++) swap(TransMap[i][Col1], TransMap[i][Col2]);
-	//äº¤æ¢è¡Œ
+	//½»»»ĞĞ
 	for (int i = 0; i < 9; i++) swap(TransMap[Raw1][i], TransMap[Raw2][i]);
 	Print_Map(TransMap);
 }
@@ -157,7 +159,7 @@ void Clear_Random(int* RandomRaw)
 {
 	for (int i = 0; i<9; i++) RandomRaw[i] = 0;
 }
-int Generator_Random(int* RandomRaw)	//1-9éšæœºç”Ÿæˆ
+int Generator_Random(int* RandomRaw)	//1-9Ëæ»úÉú³É
 {
 	int num;
 	num = rand() % 9;
