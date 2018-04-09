@@ -25,7 +25,6 @@ int Solve_Sudoku(char File[])
 	/*计时器
 	clock_t startTime, endTime;
 	startTime = clock();*/
-	int t;
 	while (scanf("%d", &Map[1][1]) != EOF)
 	{
 		for (int i = 1; i <= 9; i++)
@@ -168,8 +167,9 @@ void print()    //输出一个满足的解
 	{
 		for (int j = 1; j <= 9; j++)
 		{
-			printf("%d%c", Map[i][j], j == 9 ? '\n' : ' ');
+			putchar(Map[i][j] + '0');
+			if (j != 9) putchar(' ');
 		}
 	}
-	printf("\n");
+	putchar('\n');
 }
