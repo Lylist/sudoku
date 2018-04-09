@@ -1,23 +1,41 @@
+#include <iostream>
+#include <cstdio>
+#include <cstdlib>
+#include <time.h>
 #include "sudoku.h"
+using namespace std;
 int Map[9][9];	//数独地图
 int TransMap[9][9];  //用于变换的数独
 int Raw[9][9];	//记录第i行出现的1-9
 int Col[9][9];	//记录第j列出现的1-9
 int Palace[9][9];	/*第i个九宫出现的1-9*/
 int n;			//记录迭代次数
+
 bool New_Sudoku(int x);		//x 开始的位置，距离0的位置
 void Clear_Random(int* r);   //清空随机数组
 int Generator_Random(int* r);     //随机生成
 void Print_Map(int Sudoku_Map[][9]); //输出终局
 void Transform(int Col1, int Col2, int Raw1, int Raw2, int Number1, int Number2);   //通过变换生成新的终局
-int main()
+
+int read(char str[])
+{
+	int Number = 0;
+	int len = strlen(str);
+	for (int i = 0; i < len; i++)
+	{
+		if (str[i]<'0' || str[i]>'9') return -1;
+		Number = Number * 10 + str[i] - '0';
+	}
+	if (Number < 1 || Number>1000000) return -1;
+	return Number;
+}
+int Generator_Sudoku(int t)
 {
 	freopen("sudoku.txt", "w", stdout);
 	/*计时器
 	clock_t startTime, endTime;
 	startTime = clock();*/
 	srand((int)time(0));
-	int t = 1000000;
 	int num = 0;
 	while (t)
 	{
