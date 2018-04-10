@@ -10,13 +10,13 @@ int r[MAXC + MAXR * 5 + 10], l[MAXC + MAXR * 5 + 10];
 int u[MAXC + MAXR * 5 + 10], d[MAXC + MAXR * 5 + 10], head[10][10][10];
 int row[MAXC + MAXR * 5 + 10], Map[10][10], ans[100], c[MAXC + MAXR * 5 + 10], s[MAXC + 10], top = 0;
 
-void Init(void);	//初始化
-void Correspondence(int Col1, int cnt);	//找到对应关系
-void Remove(int Col1);	//将Col1列去掉。并且将相应行也去掉。
-void Resume(int Col1);	//将Col1列恢复，并将相应行恢复。记得顺序！！！
-bool dfs(int now);	
-void print(void);    //输出一个满足的解
-
+inline void Init(void);	//初始化
+inline void Correspondence(int Col1, int cnt);	//找到对应关系
+inline void Remove(int Col1);	//将Col1列去掉。并且将相应行也去掉。
+inline void Resume(int Col1);	//将Col1列恢复，并将相应行恢复。记得顺序！！！
+inline bool dfs(int now);	
+inline void print(void);    //输出一个满足的解
+inline bool Read_Number(int &num);	//快速读入函数
 
 int Solve_Sudoku(char File[])
 {
@@ -25,16 +25,21 @@ int Solve_Sudoku(char File[])
 	/*计时器
 	clock_t startTime, endTime;
 	startTime = clock();*/
-	while (scanf("%d", &Map[1][1]) != EOF)
+	int t = 0;
+	while (Read_Number(Map[1][1])==true)
 	{
+		//printf("%d\n", ++t);
 		for (int i = 1; i <= 9; i++)
 		{
 			for (int j = 1; j <= 9; j++)
 			{
 				if (i == 1 && j == 1) continue;
-				scanf("%d", &Map[i][j]);
+				Read_Number(Map[i][j]);
+			//	printf("%d ", Map[i][j]);
 			}
+			//printf("\n");
 		}
+		//printf("\n");
 		Init();//初始化；
 		for (int i = 1; i <= 9; i++)
 			for (int j = 1; j <= 9; j++)
@@ -57,10 +62,28 @@ int Solve_Sudoku(char File[])
 	return 0;
 }
 
-void Init()   //初始化
+inline bool Read_Number(int &num)
 {
-	memset(s, 0, sizeof(s));
-	memset(head, 0, sizeof(head));
+	char in; 
+	bool IsN = false;
+	in = getchar();
+	if (in == EOF) return false;
+	while (in != '-' && (in<'0' || in>'9'))
+	{
+		in = getchar();
+		if (in == EOF) return false;
+	}
+	if (in == '-') { IsN = true; num = 0; }
+	else num = in - '0';
+	while (in = getchar(), in >= '0'&&in <= '9') {
+		num *= 10, num += in - '0';
+	}
+	if (IsN) num = -num;
+	return true;
+}
+
+inline void Init()   //初始化
+{
 	top = 0;
 	for (int i = 0; i <= MAXC + MAXR * 5; i++)
 	{
@@ -93,7 +116,7 @@ void Init()   //初始化
 	for (int i = 0; i < 100; i++) ans[i] = 0;
 }
 
-void Correspondence(int Col1, int cnt)//找到对应关系
+inline void Correspondence(int Col1, int cnt)//找到对应关系
 {
 	u[d[Col1]] = cnt;
 	d[cnt] = d[Col1];
@@ -103,7 +126,7 @@ void Correspondence(int Col1, int cnt)//找到对应关系
 	c[cnt] = Col1;
 }
 
-void Remove(int Col1)//将Col1列去掉。并且将相应行也去掉。
+inline void Remove(int Col1)//将Col1列去掉。并且将相应行也去掉。
 {
 	l[r[Col1]] = l[Col1]; r[l[Col1]] = r[Col1];
 	for (int i = d[Col1]; i != Col1; i = d[i])
@@ -115,7 +138,7 @@ void Remove(int Col1)//将Col1列去掉。并且将相应行也去掉。
 		}
 }
 
-void Resume(int Col1)//将Col1列恢复，并将相应行恢复。记得顺序！！！！之前是d-r，现在是u-l。
+inline void Resume(int Col1)//将Col1列恢复，并将相应行恢复。记得顺序！！！！之前是d-r，现在是u-l。
 {
 	for (int i = u[Col1]; i != Col1; i = u[i])
 		for (int j = l[i]; j != i; j = l[j])
@@ -127,7 +150,7 @@ void Resume(int Col1)//将Col1列恢复，并将相应行恢复。记得顺序�
 	l[r[Col1]] = Col1;
 	r[l[Col1]] = Col1;
 }
-bool dfs(int now)
+inline bool dfs(int now)
 {
 	//if (k>81) return true;
 	if (r[0] == 0) return true;
@@ -153,7 +176,7 @@ bool dfs(int now)
 	Resume(Col1);
 	return false;
 }
-void print()    //输出一个满足的解
+inline void print()    //输出一个满足的解
 {
 	int x, y, num;
 	for (int i = 1; i <= 81; i++)
