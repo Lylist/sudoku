@@ -9,14 +9,14 @@
 
 int main(int argc, char *argv[])
 {
-	if (argc < 2)  
+	if (argc < 2)
 	{
 		printf("Plwase use the parameters\n");
 		return 0;
 	}
-	else if (strcmp(argv[1], "-c") == 0) //生成 
+	else if (strcmp(argv[1], "-c") == 0)
 	{
-		int NumDudoku = read(argv[2]);  //参数错误 
+		int NumDudoku = read(argv[2]);
 		if (NumDudoku != -1)
 		{
 			
@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 		}
 		else printf("Please enter the number in 1-1000000\n");
 	}
-	else if (strcmp(argv[1], "-s") == 0)  //求解 
+	else if (strcmp(argv[1], "-s") == 0)
 	{
 		Solve_Sudoku(argv[2]);
 	}

@@ -2,6 +2,9 @@
 #include <cstring>
 using namespace std;
 
-extern int Generator_Sudoku(int t);   //ç”Ÿæˆç»ˆå±€
-extern int read(char str[]);	//å­—ç¬¦ä¸²è½¬æ•°å­—
-extern int Solve_Sudoku(char File[]);		//è§£æ•°ç‹¬
+extern int Generator_Sudoku(int t);   //Éú³ÉÖÕ¾Ö
+extern int read(char str[]);	//×Ö·û´®×ªÊı×Ö
+extern int Solve_Sudoku(char File[]);		//½âÊı¶À
+
+
+

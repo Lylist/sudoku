@@ -14,8 +14,8 @@ int n;			//记录迭代次数
 bool New_Sudoku(int x);		//x 开始的位置，距离0的位置
 void Clear_Random(int* r);   //清空随机数组
 int Generator_Random(int* r);     //随机生成
-void Print_Map(int Sudoku_Map[][9]); //输出终局
-void Transform(int Col1, int Col2, int Raw1, int Raw2, int Number1, int Number2);   //通过变换生成新的终局
+void Print_Map(int Sudoku_Map[][9],int t); //输出终局
+void Transform(int Col1, int Col2, int Raw1, int Raw2, int Number1, int Number2,int t);   //通过变换生成新的终局
 
 int read(char str[])
 {
@@ -58,7 +58,7 @@ int Generator_Sudoku(int t)
 			Col[0][0] = 1;
 			Palace[0][0] = 1;
 			New_Sudoku(1);
-			Print_Map(Map);
+			Print_Map(Map,num);
 			num++;
 			t--;
 			continue;
@@ -83,7 +83,7 @@ int Generator_Sudoku(int t)
 							for (int Number2 = Number1 + 1; Number2 <= 9; Number2++)
 							{
 								if (t == 0) break;
-								Transform(Col1, Col2, Raw1, Raw2, Number1, Number2);
+								Transform(Col1, Col2, Raw1, Raw2, Number1, Number2,num);
 								num++;
 								t--;
 							}
@@ -125,8 +125,11 @@ bool New_Sudoku(int x)	//x为当前的位置
 		}
 	} while (1);
 }
-void Print_Map(int Sudoku_Map[][9])
+
+void Print_Map(int Sudoku_Map[][9],int t)
 {
+	if (t != 0)
+		putchar('\n'), putchar('\n');
 	for (int i = 0; i<9; i++)
 	{
 		for (int j = 0; j<9; j++)
@@ -134,11 +137,12 @@ void Print_Map(int Sudoku_Map[][9])
 			putchar(Sudoku_Map[i][j] + '0');
 			if (j != 8) putchar(' ');
 		}
-		putchar('\n');
+		if(i!=8)putchar('\n');
 	}
-	putchar('\n');
+
 }
-void Transform(int Col1, int Col2, int Raw1, int Raw2, int Number1, int Number2)
+
+void Transform(int Col1, int Col2, int Raw1, int Raw2, int Number1, int Number2,int t)
 {
 	for (int i = 0; i < 9; i++)    //交换数字
 	{
@@ -153,12 +157,14 @@ void Transform(int Col1, int Col2, int Raw1, int Raw2, int Number1, int Number2)
 	for (int i = 0; i < 9; i++) swap(TransMap[i][Col1], TransMap[i][Col2]);
 	//交换行
 	for (int i = 0; i < 9; i++) swap(TransMap[Raw1][i], TransMap[Raw2][i]);
-	Print_Map(TransMap);
+	Print_Map(TransMap,t);
 }
+
 void Clear_Random(int* RandomRaw)
 {
 	for (int i = 0; i<9; i++) RandomRaw[i] = 0;
 }
+
 int Generator_Random(int* RandomRaw)	//1-9随机生成
 {
 	int num;
