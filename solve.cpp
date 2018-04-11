@@ -5,30 +5,30 @@
 #include <time.h>
 #include "sudoku.h"
 using namespace std;
-const int MAXR = 729, MAXC = 324;//±íÃ÷¸Ã¾ØÕóÎª729*324.
+const int MAXR = 729, MAXC = 324;//è¡¨æ˜è¯¥çŸ©é˜µä¸º729*324.
 int r[MAXC + MAXR * 5 + 10], l[MAXC + MAXR * 5 + 10];
 int u[MAXC + MAXR * 5 + 10], d[MAXC + MAXR * 5 + 10], head[10][10][10];
 int row[MAXC + MAXR * 5 + 10], Map[10][10], ans[100], c[MAXC + MAXR * 5 + 10], s[MAXC + 10], top = 0;
 
-//³õÊ¼»¯Ê¹ÓÃµÄÁÙÊ±Êı×é
+//åˆå§‹åŒ–ä½¿ç”¨çš„ä¸´æ—¶æ•°ç»„
 int r2[MAXC + MAXR * 5 + 10], l2[MAXC + MAXR * 5 + 10];
 int u2[MAXC + MAXR * 5 + 10], d2[MAXC + MAXR * 5 + 10], head2[10][10][10];
 int row2[MAXC + MAXR * 5 + 10], ans2[100], c2[MAXC + MAXR * 5 + 10], s2[MAXC + 10];
 
-inline void Init(void);	//³õÊ¼»¯
-inline void Correspondence(int Col1, int cnt);	//ÕÒµ½¶ÔÓ¦¹ØÏµ
-inline void Remove(int Col1);	//½«Col1ÁĞÈ¥µô¡£²¢ÇÒ½«ÏàÓ¦ĞĞÒ²È¥µô¡£
-inline void Resume(int Col1);	//½«Col1ÁĞ»Ö¸´£¬²¢½«ÏàÓ¦ĞĞ»Ö¸´¡£¼ÇµÃË³Ğò£¡£¡£¡
+inline void Init(void);	//åˆå§‹åŒ–
+inline void Correspondence(int Col1, int cnt);	//æ‰¾åˆ°å¯¹åº”å…³ç³»
+inline void Remove(int Col1);	//å°†Col1åˆ—å»æ‰ã€‚å¹¶ä¸”å°†ç›¸åº”è¡Œä¹Ÿå»æ‰ã€‚
+inline void Resume(int Col1);	//å°†Col1åˆ—æ¢å¤ï¼Œå¹¶å°†ç›¸åº”è¡Œæ¢å¤ã€‚è®°å¾—é¡ºåºï¼ï¼ï¼
 inline bool dfs(int now);
-inline void print(int t);    //Êä³öÒ»¸öÂú×ãµÄ½â
-inline bool Read_Number(int &num);	//¿ìËÙ¶ÁÈëº¯Êı
+inline void print(int t);    //è¾“å‡ºä¸€ä¸ªæ»¡è¶³çš„è§£
+inline bool Read_Number(int &num);	//å¿«é€Ÿè¯»å…¥å‡½æ•°
 inline void init();
 
 int Solve_Sudoku(char File[])
 {
 	freopen(File, "r", stdin);
 	freopen("sudoku.txt", "w", stdout);
-	/*¼ÆÊ±Æ÷
+	/*è®¡æ—¶å™¨
 	clock_t startTime, endTime;
 	startTime = clock();*/
 	init();
@@ -44,10 +44,10 @@ int Solve_Sudoku(char File[])
 				Read_Number(Map[i][j]);
 			}
 		}
-		Init();//³õÊ¼»¯£»
+		Init();//åˆå§‹åŒ–ï¼›
 		for (int i = 1; i <= 9; i++)
 			for (int j = 1; j <= 9; j++)
-				if (Map[i][j])   //½«ÒÑ¾­´æÔÚµÄÔªËØÔÚ¾ØÕóÖĞÈ¥µô£¬¾ÍÊÇÉ¾³ı²¢¼ÇÂ¼ÏàÓ¦µÄĞĞÓëÁĞ
+				if (Map[i][j])   //å°†å·²ç»å­˜åœ¨çš„å…ƒç´ åœ¨çŸ©é˜µä¸­å»æ‰ï¼Œå°±æ˜¯åˆ é™¤å¹¶è®°å½•ç›¸åº”çš„è¡Œä¸åˆ—
 				{
 					top++;
 					ans[top] = row[head[i][j][Map[i][j]]];
@@ -56,11 +56,11 @@ int Solve_Sudoku(char File[])
 						Remove(c[u]);
 				}
 		bool ok;
-		ok = dfs(top + 1);	//Ö»ĞèÒªËÑË÷Ê£ÏÂµÄ¼´¿É
+		ok = dfs(top + 1);	//åªéœ€è¦æœç´¢å‰©ä¸‹çš„å³å¯
 		if (ok == true) print(t);
 		else printf("No solution\n\n");
 	}
-	/*¼ÆÊ±Æ÷
+	/*è®¡æ—¶å™¨
 	endTime = clock();
 	cout << "Totle Time : " << (double)(endTime - startTime) / CLOCKS_PER_SEC << "s" << endl;*/
 	return 0;
@@ -108,7 +108,7 @@ inline void Init()
 			}
 }
 
-inline void init()   //³õÊ¼»¯
+inline void init()   //åˆå§‹åŒ–
 {
 	top = 0;
 	for (int i = 0; i <= MAXC + MAXR * 5; i++)
@@ -138,11 +138,11 @@ inline void init()   //³õÊ¼»¯
 				Correspondence(81 + (k - 1) * 27 + 9 + j, cnt + 3);
 				Correspondence(81 + (k - 1) * 27 + 18 + (j - 1) / 3 + 1 + ((i - 1) / 3) * 3, cnt + 4);
 				cnt += 4;
-			}    //½¨Á¢Ô­Ê¼¾ØÕó£¨Ö»ÊÇÒ»ÖÖ¶ÔÓ¦¹ØÏµ£©
+			}    //å»ºç«‹åŸå§‹çŸ©é˜µï¼ˆåªæ˜¯ä¸€ç§å¯¹åº”å…³ç³»ï¼‰
 	for (int i = 0; i < 100; i++) ans2[i] = 0;
 }
 
-inline void Correspondence(int Col1, int cnt)//ÕÒµ½¶ÔÓ¦¹ØÏµ
+inline void Correspondence(int Col1, int cnt)//æ‰¾åˆ°å¯¹åº”å…³ç³»
 {
 	u2[d2[Col1]] = cnt;
 	d2[cnt] = d2[Col1];
@@ -152,7 +152,7 @@ inline void Correspondence(int Col1, int cnt)//ÕÒµ½¶ÔÓ¦¹ØÏµ
 	c2[cnt] = Col1;
 }
 
-inline void Remove(int Col1)//½«Col1ÁĞÈ¥µô¡£²¢ÇÒ½«ÏàÓ¦ĞĞÒ²È¥µô¡£
+inline void Remove(int Col1)//å°†Col1åˆ—å»æ‰ã€‚å¹¶ä¸”å°†ç›¸åº”è¡Œä¹Ÿå»æ‰ã€‚
 {
 	l[r[Col1]] = l[Col1]; r[l[Col1]] = r[Col1];
 	for (int i = d[Col1]; i != Col1; i = d[i])
@@ -164,7 +164,7 @@ inline void Remove(int Col1)//½«Col1ÁĞÈ¥µô¡£²¢ÇÒ½«ÏàÓ¦ĞĞÒ²È¥µô¡£
 		}
 }
 
-inline void Resume(int Col1)//½«Col1ÁĞ»Ö¸´£¬²¢½«ÏàÓ¦ĞĞ»Ö¸´¡£¼ÇµÃË³Ğò£¡£¡£¡£¡Ö®Ç°ÊÇd-r£¬ÏÖÔÚÊÇu-l¡£
+inline void Resume(int Col1)//å°†Col1åˆ—æ¢å¤ï¼Œå¹¶å°†ç›¸åº”è¡Œæ¢å¤ã€‚è®°å¾—é¡ºåºï¼ï¼ï¼ï¼ä¹‹å‰æ˜¯d-rï¼Œç°åœ¨æ˜¯u-lã€‚
 {
 	for (int i = u[Col1]; i != Col1; i = u[i])
 		for (int j = l[i]; j != i; j = l[j])
@@ -179,7 +179,7 @@ inline void Resume(int Col1)//½«Col1ÁĞ»Ö¸´£¬²¢½«ÏàÓ¦ĞĞ»Ö¸´¡£¼ÇµÃË³Ğò£¡£¡£¡£¡Ö®Ç°
 inline bool dfs(int now)
 {
 	if (r[0] == 0) return true;
-	int Col1, minnum = 10000000;
+	int Col1=0, minnum = 10000000;
 	for (int i = r[0]; i != 0; i = r[i])
 	{
 		if (s[i] == 0) return false;
@@ -201,7 +201,7 @@ inline bool dfs(int now)
 	Resume(Col1);
 	return false;
 }
-inline void print(int t)    //Êä³öÒ»¸öÂú×ãµÄ½â
+inline void print(int t)    //è¾“å‡ºä¸€ä¸ªæ»¡è¶³çš„è§£
 {
 	int x, y, num;
 	if (t != 1) putchar('\n'), putchar('\n');
