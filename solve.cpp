@@ -10,6 +10,11 @@ int r[MAXC + MAXR * 5 + 10], l[MAXC + MAXR * 5 + 10];
 int u[MAXC + MAXR * 5 + 10], d[MAXC + MAXR * 5 + 10], head[10][10][10];
 int row[MAXC + MAXR * 5 + 10], Map[10][10], ans[100], c[MAXC + MAXR * 5 + 10], s[MAXC + 10], top = 0;
 
+//初始化使用的临时数组
+int r2[MAXC + MAXR * 5 + 10], l2[MAXC + MAXR * 5 + 10];
+int u2[MAXC + MAXR * 5 + 10], d2[MAXC + MAXR * 5 + 10], head2[10][10][10];
+int row2[MAXC + MAXR * 5 + 10], ans2[100], c2[MAXC + MAXR * 5 + 10], s2[MAXC + 10];
+
 inline void Init(void);	//初始化
 inline void Correspondence(int Col1, int cnt);	//找到对应关系
 inline void Remove(int Col1);	//将Col1列去掉。并且将相应行也去掉。
@@ -17,29 +22,26 @@ inline void Resume(int Col1);	//将Col1列恢复，并将相应行恢复。记�
 inline bool dfs(int now);	
 inline void print(void);    //输出一个满足的解
 inline bool Read_Number(int &num);	//快速读入函数
+inline void init();
 
 int Solve_Sudoku(char File[])
 {
 	freopen(File, "r", stdin);
-	freopen("sudoku.txt", "w", stdout);
+	freopen("sudoku.tex", "w", stdout);
 	/*计时器
 	clock_t startTime, endTime;
 	startTime = clock();*/
-	int t = 0;
+	init();
 	while (Read_Number(Map[1][1])==true)
 	{
-		//printf("%d\n", ++t);
 		for (int i = 1; i <= 9; i++)
 		{
 			for (int j = 1; j <= 9; j++)
 			{
 				if (i == 1 && j == 1) continue;
 				Read_Number(Map[i][j]);
-			//	printf("%d ", Map[i][j]);
 			}
-			//printf("\n");
 		}
-		//printf("\n");
 		Init();//初始化；
 		for (int i = 1; i <= 9; i++)
 			for (int j = 1; j <= 9; j++)
@@ -82,18 +84,40 @@ inline bool Read_Number(int &num)
 	return true;
 }
 
-inline void Init()   //初始化
+inline void Init()
 {
 	top = 0;
 	for (int i = 0; i <= MAXC + MAXR * 5; i++)
 	{
-		r[i] = 0; l[i] = 0; u[i] = 0; d[i] = 0; c[i] = 0; row[i] = 0;
+		r[i] = r2[i]; l[i] = l2[i];
+		u[i] = u2[i]; d[i] = d2[i];
+		c[i] = c2[i]; row[i] = row2[i];
 	}
 	for (int i = 0; i <= MAXC; i++)
 	{
-		s[i] = 0; l[i] = i - 1; r[i] = i + 1; u[i] = d[i] = i; c[i] = 0;
+		s[i] = s2[i];
 	}
-	l[0] = MAXC; r[MAXC] = 0;
+	for (int i = 0; i < 90; i++) ans[i] = 0;
+	for (int i = 1; i <= 9; i++)
+		for (int j = 1; j <= 9; j++)
+			for (int k = 1; k <= 9; k++)
+			{
+				head[i][j][k] = head2[i][j][k];
+			}
+}
+
+inline void init()   //初始化
+{
+	top = 0;
+	for (int i = 0; i <= MAXC + MAXR * 5; i++)
+	{
+		r2[i] = 0; l2[i] = 0; u2[i] = 0; d2[i] = 0; c2[i] = 0; row2[i] = 0;
+	}
+	for (int i = 0; i <= MAXC; i++)
+	{
+		s2[i] = 0; l2[i] = i - 1; r2[i] = i + 1; u2[i] = d2[i] = i; c2[i] = 0;
+	}
+	l2[0] = MAXC; r2[MAXC] = 0;
 	int cnt = MAXC;
 	for (int i = 1; i <= 9; i++)
 		for (int j = 1; j <= 9; j++)
@@ -101,29 +125,29 @@ inline void Init()   //初始化
 			{
 				for (int u = 1; u <= 4; u++)
 				{
-					l[cnt + u] = cnt + u - 1;
-					r[cnt + u] = cnt + u + 1;
-					row[cnt + u] = 81 * (k - 1) + (i - 1) * 9 + j;
+					l2[cnt + u] = cnt + u - 1;
+					r2[cnt + u] = cnt + u + 1;
+					row2[cnt + u] = 81 * (k - 1) + (i - 1) * 9 + j;
 				}
-				l[cnt + 1] = cnt + 4; r[cnt + 4] = cnt + 1;
-				head[i][j][k] = cnt + 1;
+				l2[cnt + 1] = cnt + 4; r2[cnt + 4] = cnt + 1;
+				head2[i][j][k] = cnt + 1;
 				Correspondence((i - 1) * 9 + j, cnt + 1);
 				Correspondence(81 + (k - 1) * 27 + i, cnt + 2);
 				Correspondence(81 + (k - 1) * 27 + 9 + j, cnt + 3);
 				Correspondence(81 + (k - 1) * 27 + 18 + (j - 1) / 3 + 1 + ((i - 1) / 3) * 3, cnt + 4);
 				cnt += 4;
 			}    //建立原始矩阵（只是一种对应关系）
-	for (int i = 0; i < 100; i++) ans[i] = 0;
+	for (int i = 0; i < 100; i++) ans2[i] = 0;
 }
 
 inline void Correspondence(int Col1, int cnt)//找到对应关系
 {
-	u[d[Col1]] = cnt;
-	d[cnt] = d[Col1];
-	u[cnt] = Col1;
-	d[Col1] = cnt;
-	s[Col1]++;
-	c[cnt] = Col1;
+	u2[d2[Col1]] = cnt;
+	d2[cnt] = d2[Col1];
+	u2[cnt] = Col1;
+	d2[Col1] = cnt;
+	s2[Col1]++;
+	c2[cnt] = Col1;
 }
 
 inline void Remove(int Col1)//将Col1列去掉。并且将相应行也去掉。
@@ -152,12 +176,11 @@ inline void Resume(int Col1)//将Col1列恢复，并将相应行恢复。记得�
 }
 inline bool dfs(int now)
 {
-	//if (k>81) return true;
 	if (r[0] == 0) return true;
 	int Col1, minnum = 10000000;
 	for (int i = r[0]; i != 0; i = r[i])
 	{
-		if (!s[i]) return false;
+		if (s[i] == 0) return false;
 		if (s[i]<minnum)
 		{
 			minnum = s[i]; Col1 = i;
