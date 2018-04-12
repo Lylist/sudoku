@@ -58,7 +58,11 @@ int Solve_Sudoku(char File[])
 		bool ok;
 		ok = dfs(top + 1);	//只需要搜索剩下的即可
 		if (ok == true) print(t);
-		else printf("No solution\n\n");
+		else
+		{
+			if (t != 1) puts("\n");
+			printf("No solution");
+		}
 	}
 	/*计时器
 	endTime = clock();
